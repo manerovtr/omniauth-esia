@@ -89,7 +89,10 @@ module OmniAuth
       end
 
       def signed_data
-        @signed_data ||= key.sign(digester, data)
+        data_file = File.new("data_file_#{rand(1...1000000000000)}", 'w'){ |file| file.write(data) }
+        sign_file = File.new("signed_data_#{rand(1...1000000000000)}", 'w')
+        system("sudo /opt/cprocsp/bin/amd64/cryptcp -sign -thumbprint 957aa4c4014c7f400de800e09398af3ac4fa7b90 #{data_file} #{sign_file}")
+        @signed_data ||= File.open(sign_file)
       end
 
       def digester
