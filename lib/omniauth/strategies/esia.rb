@@ -90,7 +90,7 @@ module OmniAuth
 
       def signed_data
         signed = OpenSSL::PKCS7::sign(crt, key, data, [], OpenSSL::PKCS7::DETACHED)
-        signed.to_s().delete!("\n")
+        signed.to_s.delete!("\n").delete!("----").delete!('PKCS7').delete!('BEGIN').delete!('END')
       end
 
       def digester
