@@ -89,17 +89,8 @@ module OmniAuth
       end
 
       def signed_data
-        data_file = File.new("data_file_#{rand(1...1000000000000)}", 'w')
-        data_file.write(data)
-        sign_file = File.new("signed_data_#{rand(1...1000000000000)}", 'w')
-        system("sudo /opt/cprocsp/bin/amd64/cryptcp -sign -thumbprint 957aa4c4014c7f400de800e09398af3ac4fa7b90 #{File.expand_path(data_file)} #{File.expand_path(sign_file)}")
-        sign_data = ""
-        File.open(File.expand_path(sign_file)) do |f|
-          f.each_line do |line|
-            sign_data << line
-          end
-        end
-        sign_data = sign_data.delete!("\n")
+        signed = OpenSSL::PKCS7::sign(crt, key, data, [], OpenSSL::PKCS7::DETACHED)
+        signed.to_s().delete!("\n")
       end
 
       def digester
